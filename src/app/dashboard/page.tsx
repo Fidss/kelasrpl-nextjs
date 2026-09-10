@@ -85,7 +85,8 @@ export default async function DashboardPage() {
     timeZone: "Asia/Jakarta",
   }).format(new Date());
 
-  const isStudentView = user.role !== "admin" && user.role !== "teacher";
+  const ATTENDANCE_PRIVILEGED_ROLES = ["admin", "teacher", "ketuakelas", "wakilketuakelas"];
+  const isStudentView = !ATTENDANCE_PRIVILEGED_ROLES.includes(user.role);
 
   if (isStudentView) {
     // Run all student queries in parallel for faster loading

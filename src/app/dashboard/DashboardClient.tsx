@@ -101,6 +101,9 @@ export const ASSIGNABLE_ROLES = [
   { value: "kebersihan", label: "Kebersihan" },
 ];
 
+// Roles that can see the full class attendance list
+const ATTENDANCE_PRIVILEGED_ROLES: string[] = ["admin", "teacher", "ketuakelas", "wakilketuakelas"];
+
 interface UserData {
   id: number;
   name: string;
@@ -762,7 +765,7 @@ export default function DashboardClient({
       )}
 
       {/* Menfess Broadcast Announcement Banner */}
-      {user.role === "student" && latestUnreadMenfess && (
+      {!ATTENDANCE_PRIVILEGED_ROLES.includes(user.role) && latestUnreadMenfess && (
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 border border-pink-200 dark:border-pink-900/50 text-zinc-900 dark:text-zinc-100 shadow-xs relative overflow-hidden transition-all">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
@@ -969,8 +972,8 @@ export default function DashboardClient({
         </a>
       </div>
 
-      {/* STUDENT VIEW */}
-      {user.role === "student" && (
+      {/* STUDENT VIEW (shown for non-privileged roles: student, sekertaris, bendahara, keamanan, kebersihan) */}
+      {!ATTENDANCE_PRIVILEGED_ROLES.includes(user.role) && (
         <div className="space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Status Kehadiran Hari Ini (1/3) */}
@@ -1326,8 +1329,8 @@ export default function DashboardClient({
         </div>
       )}
 
-      {/* ADMIN & TEACHER VIEW */}
-      {user.role !== "student" && (
+      {/* ADMIN, TEACHER, KETUA & WAKIL KETUA VIEW */}
+      {ATTENDANCE_PRIVILEGED_ROLES.includes(user.role) && (
         <div className="space-y-6">
           {/* Tanggal Rekapitulasi Selector Bar */}
           <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
