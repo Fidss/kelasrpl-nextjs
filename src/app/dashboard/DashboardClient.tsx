@@ -24,16 +24,88 @@ import {
   Plus,
   UploadCloud,
   ExternalLink,
+  Shield,
+  Crown,
+  Sparkles,
+  Award,
   Image as ImageIcon,
 } from "lucide-react";
 import ClassSchedule from "@/components/landing/ClassSchedule";
 import { useLanguage } from "@/context/LanguageContext";
 
+export type AppRole =
+  | "admin"
+  | "teacher"
+  | "student"
+  | "ketuakelas"
+  | "wakilketuakelas"
+  | "sekertaris"
+  | "bendahara"
+  | "keamanan"
+  | "kebersihan"
+  | string;
+
+export interface RoleConfig {
+  label: string;
+  badgeClass: string;
+  icon?: any;
+}
+
+export const ROLE_CONFIGS: Record<string, RoleConfig> = {
+  admin: {
+    label: "Admin Kelas",
+    badgeClass: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900/50",
+  },
+  teacher: {
+    label: "Guru / Wali Kelas",
+    badgeClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50",
+  },
+  ketuakelas: {
+    label: "Ketua Kelas",
+    badgeClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50",
+  },
+  wakilketuakelas: {
+    label: "Wakil Ketua Kelas",
+    badgeClass: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-900/50",
+  },
+  sekertaris: {
+    label: "Sekretaris",
+    badgeClass: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-200 dark:border-cyan-900/50",
+  },
+  bendahara: {
+    label: "Bendahara",
+    badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50",
+  },
+  keamanan: {
+    label: "Seksi Keamanan",
+    badgeClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50",
+  },
+  kebersihan: {
+    label: "Seksi Kebersihan",
+    badgeClass: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-900/50",
+  },
+  student: {
+    label: "Murid (Siswa)",
+    badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50",
+  },
+};
+
+export const ASSIGNABLE_ROLES = [
+  { value: "student", label: "Murid (Default)" },
+  { value: "teacher", label: "Guru" },
+  { value: "ketuakelas", label: "Ketua Kelas" },
+  { value: "wakilketuakelas", label: "Wakil Ketua Kelas" },
+  { value: "sekertaris", label: "Sekretaris" },
+  { value: "bendahara", label: "Bendahara" },
+  { value: "keamanan", label: "Keamanan" },
+  { value: "kebersihan", label: "Kebersihan" },
+];
+
 interface UserData {
   id: number;
   name: string;
   nis: string;
-  role: "student" | "admin" | "teacher";
+  role: AppRole;
 }
 
 interface AttendanceRecord {
@@ -64,6 +136,7 @@ interface StudentAdminRow {
   name: string;
   nis: string;
   gender: string;
+  role?: string;
   status?: string;
   notes?: string | null;
   time?: string | null;
@@ -253,6 +326,7 @@ export default function DashboardClient({
   // Anti-spam loading states
   const [markingReadId, setMarkingReadId] = useState<number | null>(null);
   const [resettingStudentId, setResettingStudentId] = useState<number | null>(null);
+  const [updatingRoleId, setUpdatingRoleId] = useState<number | null>(null);
   const [isQuickResetting, setIsQuickResetting] = useState(false);
 
   // Floating Mini Audio Player for Songfess
@@ -468,6 +542,30 @@ export default function DashboardClient({
       setQuickResetUserId("");
     } finally {
       setIsQuickResetting(false);
+    }
+  };
+
+  const handleUpdateRole = async (studentId: number, studentName: string, newRole: string) => {
+    setUpdatingRoleId(studentId);
+    try {
+      const res = await fetch("/api/admin/update-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: studentId, role: newRole }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAlert({ type: "error", text: data.error || "Gagal mengubah role." });
+      } else {
+        setAlert({ type: "success", text: data.message });
+        setAdminStudents((prev) =>
+          prev.map((s) => (s.id === studentId ? { ...s, role: newRole } : s))
+        );
+      }
+    } catch {
+      setAlert({ type: "error", text: "Terjadi kesalahan jaringan saat mengubah role." });
+    } finally {
+      setUpdatingRoleId(null);
     }
   };
 
@@ -716,6 +814,21 @@ export default function DashboardClient({
                 </span>
                 <span data-i18n="dash.badge">{t("dash.badge")}</span>
               </span>
+
+              {/* User Role Badge */}
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border shadow-2xs ${
+                  ROLE_CONFIGS[user.role]?.badgeClass ||
+                  "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
+                }`}
+              >
+                {user.role === "admin" && <Shield className="w-3.5 h-3.5" />}
+                {user.role === "teacher" && <Award className="w-3.5 h-3.5" />}
+                {user.role === "ketuakelas" && <Crown className="w-3.5 h-3.5" />}
+                {user.role === "wakilketuakelas" && <Sparkles className="w-3.5 h-3.5" />}
+                <span>{ROLE_CONFIGS[user.role]?.label || user.role}</span>
+              </span>
+
               <span className="text-xs text-zinc-400 dark:text-zinc-500 font-mono">
                 Asia/Jakarta (UTC+7)
               </span>
@@ -1398,6 +1511,7 @@ export default function DashboardClient({
                   <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 uppercase text-[10px]">
                     <th className="py-3 px-4 font-semibold">Nama Siswa</th>
                     <th className="py-3 px-4 font-semibold">NIS</th>
+                    <th className="py-3 px-4 font-semibold">Role / Jabatan</th>
                     <th className="py-3 px-4 font-semibold">Status</th>
                     <th className="py-3 px-4 font-semibold">Waktu Absen</th>
                     <th className="py-3 px-4 font-semibold">Keterangan</th>
@@ -1407,75 +1521,117 @@ export default function DashboardClient({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {adminStudents.map((student) => (
-                    <tr
-                      key={student.id}
-                      className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-                    >
-                      <td className="py-3 px-4 font-medium text-zinc-900 dark:text-zinc-100">
-                        {student.name}
-                      </td>
-                      <td className="py-3 px-4 font-mono text-zinc-500">{student.nis}</td>
-                      <td className="py-3 px-4">
-                        {student.status === "hadir" && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            Hadir
-                          </span>
-                        )}
-                        {student.status === "izin" && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                            Izin
-                          </span>
-                        )}
-                        {student.status === "sakit" && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
-                            Sakit
-                          </span>
-                        )}
-                        {student.status !== "hadir" &&
-                          student.status !== "izin" &&
-                          student.status !== "sakit" && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400">
-                              Belum Absen
+                  {adminStudents.map((student) => {
+                    const studentRole = student.role || "student";
+                    const roleConfig = ROLE_CONFIGS[studentRole] || {
+                      label: studentRole,
+                      badgeClass: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200",
+                    };
+
+                    return (
+                      <tr
+                        key={student.id}
+                        className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+                      >
+                        <td className="py-3 px-4 font-medium text-zinc-900 dark:text-zinc-100">
+                          {student.name}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-zinc-500">{student.nis}</td>
+                        <td className="py-3 px-4">
+                          {user.role === "admin" ? (
+                            <div className="inline-flex items-center gap-1.5">
+                              <select
+                                value={studentRole}
+                                disabled={updatingRoleId === student.id}
+                                onChange={(e) =>
+                                  handleUpdateRole(student.id, student.name, e.target.value)
+                                }
+                                className={`text-[11px] font-bold rounded-lg border px-2 py-1 outline-none transition cursor-pointer shadow-2xs ${roleConfig.badgeClass} disabled:opacity-50`}
+                                title="Ubah role / jabatan siswa ini"
+                              >
+                                {ASSIGNABLE_ROLES.map((r) => (
+                                  <option
+                                    key={r.value}
+                                    value={r.value}
+                                    className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-normal"
+                                  >
+                                    {r.label}
+                                  </option>
+                                ))}
+                              </select>
+                              {updatingRoleId === student.id && (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-500" />
+                              )}
+                            </div>
+                          ) : (
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs ${roleConfig.badgeClass}`}
+                            >
+                              {roleConfig.label}
                             </span>
                           )}
-                      </td>
-                      <td className="py-3 px-4 font-mono text-zinc-600 dark:text-zinc-400">
-                        {student.time ? (
-                          <span className="inline-flex items-center gap-1.5 font-medium text-zinc-800 dark:text-zinc-200">
-                            <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                            {student.time} WIB
-                          </span>
-                        ) : (
-                          <span className="text-zinc-400">-</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-zinc-500">{student.notes || "-"}</td>
-                      {user.role === "admin" && (
-                        <td className="py-3 px-4 text-center whitespace-nowrap">
-                          <button
-                            type="button"
-                            disabled={resettingStudentId === student.id}
-                            onClick={() => handleResetPassword(student.id, student.name)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 border border-amber-200/80 dark:border-amber-800/50 transition cursor-pointer shadow-xs disabled:opacity-50"
-                            title="Reset password siswa ini ke default (12345678)"
-                          >
-                            {resettingStudentId === student.id ? (
-                              <>
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                <span>Mereset...</span>
-                              </>
-                            ) : (
-                              <>
-                                <KeyRound className="w-3.5 h-3.5" />
-                                <span>Reset 12345678</span>
-                              </>
-                            )}
-                          </button>
                         </td>
-                      )}
-                    </tr>
-                  ))}
+                        <td className="py-3 px-4">
+                          {student.status === "hadir" && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                              Hadir
+                            </span>
+                          )}
+                          {student.status === "izin" && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                              Izin
+                            </span>
+                          )}
+                          {student.status === "sakit" && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                              Sakit
+                            </span>
+                          )}
+                          {student.status !== "hadir" &&
+                            student.status !== "izin" &&
+                            student.status !== "sakit" && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-400">
+                                Belum Absen
+                              </span>
+                            )}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-zinc-600 dark:text-zinc-400">
+                          {student.time ? (
+                            <span className="inline-flex items-center gap-1.5 font-medium text-zinc-800 dark:text-zinc-200">
+                              <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                              {student.time} WIB
+                            </span>
+                          ) : (
+                            <span className="text-zinc-400">-</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-zinc-500">{student.notes || "-"}</td>
+                        {user.role === "admin" && (
+                          <td className="py-3 px-4 text-center whitespace-nowrap">
+                            <button
+                              type="button"
+                              disabled={resettingStudentId === student.id}
+                              onClick={() => handleResetPassword(student.id, student.name)}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 border border-amber-200/80 dark:border-amber-800/50 transition cursor-pointer shadow-xs disabled:opacity-50"
+                              title="Reset password siswa ini ke default (12345678)"
+                            >
+                              {resettingStudentId === student.id ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  <span>Mereset...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <KeyRound className="w-3.5 h-3.5" />
+                                  <span>Reset 12345678</span>
+                                </>
+                              )}
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

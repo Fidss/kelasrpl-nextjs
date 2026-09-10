@@ -85,7 +85,9 @@ export default async function DashboardPage() {
     timeZone: "Asia/Jakarta",
   }).format(new Date());
 
-  if (user.role === "student") {
+  const isStudentView = user.role !== "admin" && user.role !== "teacher";
+
+  if (isStudentView) {
     // Run all student queries in parallel for faster loading
     const [todayResult, historyResult, menfessResult, memoriesResult] = await Promise.allSettled([
       sql`
@@ -214,9 +216,9 @@ export default async function DashboardPage() {
     // Admin / Teacher Role — Run all queries in parallel
     const [studentsResult, attResult, memoriesResult, datesResult] = await Promise.allSettled([
       sql`
-        SELECT id, name, nis, gender
+        SELECT id, name, nis, gender, role
         FROM users
-        WHERE role = 'student'
+        WHERE role != 'admin'
         ORDER BY name ASC
       `,
       sql`

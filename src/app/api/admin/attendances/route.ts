@@ -75,9 +75,9 @@ export async function GET(req: NextRequest) {
 
     // 1. Fetch Students
     const students = await sql`
-      SELECT id, name, nis, gender
+      SELECT id, name, nis, gender, role
       FROM users
-      WHERE role = 'student'
+      WHERE role != 'admin'
       ORDER BY name ASC
     `;
 

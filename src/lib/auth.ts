@@ -6,12 +6,23 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "kelasrpl-jwt-secret-key-2026-smk17jkt"
 );
 
+export type UserRole =
+  | "admin"
+  | "teacher"
+  | "student"
+  | "ketuakelas"
+  | "wakilketuakelas"
+  | "sekertaris"
+  | "bendahara"
+  | "keamanan"
+  | "kebersihan";
+
 export interface AuthUser {
   id: number;
   name: string;
   nis: string;
   email: string | null;
-  role: "student" | "admin" | "teacher";
+  role: UserRole | string;
   gender: "L" | "P" | null;
 }
 
