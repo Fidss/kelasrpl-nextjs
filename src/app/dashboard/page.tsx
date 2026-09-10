@@ -286,6 +286,7 @@ export default async function DashboardPage() {
         name: String(s.name || ""),
         nis: String(s.nis || "-"),
         gender: String(s.gender || "L"),
+        role: String(s.role || "student"),
         status: att ? att.status : "alpa",
         notes: att?.notes || null,
         time: att?.time || null,
