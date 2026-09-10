@@ -166,3 +166,56 @@ export const allActivitiesData: Record<number, ScheduleItem[]> = {
     { start: '12:45', end: '15:00', timeDisplay: '12.45 - 15.00', subject: 'Matematika (Lanjutan)', teacher: 'Nurkholis Aiman, S.Pd.', period: 'Jam ke 7-9', category: 'general' }
   ]
 };
+
+export interface PiketItem {
+  name: string;
+}
+
+export const piketData: Record<number, string[]> = {
+  1: [ // SENIN
+    "Aditya Laksamana P.",
+    "M. Hafidz Malik",
+    "Ricky Rahan",
+    "Arjun Wijaya",
+    "Virzi Aziqri B.",
+    "Cinta R. Arrasya",
+    "Kirana Surya D."
+  ],
+  2: [ // SELASA
+    "Risqi Noer Sanubari",
+    "Ahmad Aqila Arham",
+    "Muhamad Fadhlan Saugie",
+    "Rafael Sugiharto",
+    "Zidane Zulfikar",
+    "Annas Tassyah A.",
+    "Asyifa Nazzila F."
+  ],
+  3: [ // RABU
+    "Dika Dwi Putra",
+    "Fadhyl Alhafizd",
+    "Imam Firmansyah",
+    "Maulana Saputra",
+    "Zahran Ibnu Ardiansyah",
+    "Muhammad Rafid Wiscaya",
+    "Azza Syahfina"
+  ],
+  4: [ // KAMIS
+    "Aqila Raesha A.",
+    "Bintang Feri",
+    "Muhammad Husain Haekal",
+    "Rakha Saputra",
+    "Ahmad Fachrial Kibar",
+    "Rama Alfarizi A.",
+    "Maysharah Zulfhah"
+  ],
+  5: [ // JUMAT
+    "Al Qoirul Lathif Nazzril Putra",
+    "Ricky Dwi Putra",
+    "Azzila Putra Afrian",
+    "Muhammad Hafiz Fahrezi",
+    "Muhammad Rizki Alfatah",
+    "Rasya Aditya",
+    "Dhiya Ulhaq R.J."
+  ]
+};
+

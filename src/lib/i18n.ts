@@ -115,6 +115,10 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
     "sched.badge": "KBM AKTIF",
     "sched.mode_lessons": "Jadwal Pelajaran",
     "sched.mode_activities": "Daftar Kegiatan",
+    "sched.mode_piket": "Jadwal Piket",
+    "sched.piket_title": "Petugas Piket Kelas",
+    "sched.piket_desc": "Daftar regu piket kebersihan kelas 10 RPL",
+    "sched.piket_today_active": "Piket Hari Ini",
     "sched.today_badge": "Hari Ini",
     "sched.day_mon": "Senin",
     "sched.day_tue": "Selasa",
@@ -134,6 +138,7 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
       "Hari ini akhir pekan (tidak ada KBM). Menampilkan jadwal hari Senin.",
     "sched.all_finished":
       "Seluruh kegiatan belajar mengajar hari ini telah selesai.",
+
 
     // Chatbot
     "chat.new_chat": "New Chat",
@@ -310,6 +315,10 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
     "sched.badge": "ACTIVE TIMETABLE",
     "sched.mode_lessons": "Class Timetable",
     "sched.mode_activities": "All Activities",
+    "sched.mode_piket": "Duty Schedule",
+    "sched.piket_title": "Class Cleaning Duty",
+    "sched.piket_desc": "Classroom cleaning duty roster for 10 RPL",
+    "sched.piket_today_active": "Today's Duty Team",
     "sched.today_badge": "Today",
     "sched.day_mon": "Monday",
     "sched.day_tue": "Tuesday",
@@ -323,11 +332,11 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
     "sched.cat_general": "General Subject",
     "sched.cat_break": "Break / Lunch",
     "sched.cat_character": "Character & Faith",
-    "sched.teacher": "Teacher",
+    "sched.teacher": "Subject Teacher",
     "sched.period": "Period",
     "sched.weekend_notice":
-      "Weekend today (no school). Displaying Monday schedule.",
-    "sched.all_finished": "All school sessions for today have concluded.",
+      "It's the weekend (no classes today). Showing Monday's timetable.",
+    "sched.all_finished": "All class activities for today have concluded.",
 
     // Chatbot
     "chat.new_chat": "New Chat",
@@ -504,6 +513,10 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
     "sched.badge": "授業日程",
     "sched.mode_lessons": "授業時間割",
     "sched.mode_activities": "全活動日程",
+    "sched.mode_piket": "日直・掃除当番",
+    "sched.piket_title": "クラス当番表",
+    "sched.piket_desc": "10 RPL 教室清掃・日直当番グループ",
+    "sched.piket_today_active": "本日の当番",
     "sched.today_badge": "今日",
     "sched.day_mon": "月曜日",
     "sched.day_tue": "火曜日",
@@ -522,6 +535,7 @@ export const translations: Record<SupportedLang, Record<string, string>> = {
     "sched.weekend_notice":
       "本日は休校日（週末）です。月曜日の時間割を表示しています。",
     "sched.all_finished": "本日のすべての授業が終了しました。",
+
 
     // Chatbot
     "chat.new_chat": "新規チャット",
