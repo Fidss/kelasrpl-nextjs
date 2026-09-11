@@ -216,12 +216,13 @@ export default async function DashboardPage() {
   } else {
     // Admin / Teacher Role — Run all queries in parallel
     const [studentsResult, attResult, memoriesResult, datesResult] = await Promise.allSettled([
-      sql`
-        SELECT id, name, nis, gender, role
-        FROM users
-        WHERE role != 'admin'
-        ORDER BY name ASC
-      `,
+       sql`
+         SELECT id, name, nis, gender, role
+         FROM users
+         WHERE role != 'admin'
+         ${user.role !== "admin" ? sql`AND role != 'teacher'` : sql``}
+         ORDER BY name ASC
+       `,
       sql`
         SELECT user_id, status, notes, created_at::text as created_at_raw, created_at
         FROM attendances

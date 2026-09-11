@@ -28,7 +28,10 @@ import {
   Crown,
   Sparkles,
   Award,
+  Users,
+  UserCheck,
   Image as ImageIcon,
+  Wallet,
 } from "lucide-react";
 import ClassSchedule from "@/components/landing/ClassSchedule";
 import { useLanguage } from "@/context/LanguageContext";
@@ -970,6 +973,95 @@ export default function DashboardClient({
             </p>
           </div>
         </a>
+
+        {(user.role === "kebersihan" ||
+          ATTENDANCE_PRIVILEGED_ROLES.includes(user.role)) && (
+          <Link
+            href="/dashboard/piket"
+            onClick={() => setNavigatingTo("/dashboard/piket")}
+            className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
+              navigatingTo === "/dashboard/piket"
+                ? "opacity-75 pointer-events-none"
+                : "hover:border-teal-500/50 hover:shadow-md"
+            }`}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+              {navigatingTo === "/dashboard/piket" ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                <Users className="w-6 h-6" />
+              )}
+            </div>
+            <div>
+              <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+                Piket Kebersihan
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                {user.role === "kebersihan"
+                  ? "Unggah foto & pantau piket kelas"
+                  : "Lihat data piket kebersihan kelas"}
+              </p>
+            </div>
+          </Link>
+        )}
+
+        {/* Kas & Keuangan Kelas Card */}
+        <Link
+          href="/dashboard/kas"
+          onClick={() => setNavigatingTo("/dashboard/kas")}
+          className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
+            navigatingTo === "/dashboard/kas"
+              ? "opacity-75 pointer-events-none"
+              : "hover:border-emerald-500/50 hover:shadow-md"
+          }`}
+        >
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+            {navigatingTo === "/dashboard/kas" ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Wallet className="w-6 h-6" />
+            )}
+          </div>
+          <div>
+            <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+              Kas &amp; Keuangan
+            </h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {user.role === "bendahara"
+                ? "Kelola uang kas & pengeluaran kelas"
+                : "Lihat status kas & transparansi kelas"}
+            </p>
+          </div>
+        </Link>
+
+        {/* Tugas & PR Kelas Card (Sekretaris) */}
+        <Link
+          href="/dashboard/tugas"
+          onClick={() => setNavigatingTo("/dashboard/tugas")}
+          className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
+            navigatingTo === "/dashboard/tugas"
+              ? "opacity-75 pointer-events-none"
+              : "hover:border-cyan-500/50 hover:shadow-md"
+          }`}
+        >
+          <div className="w-12 h-12 rounded-2xl bg-cyan-50 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+            {navigatingTo === "/dashboard/tugas" ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <BookOpen className="w-6 h-6" />
+            )}
+          </div>
+          <div>
+            <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition">
+              Tugas &amp; PR Kelas
+            </h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {user.role === "sekertaris"
+                ? "Kelola & bagikan daftar tugas kelas"
+                : "Lihat daftar tugas & PR aktif"}
+            </p>
+          </div>
+        </Link>
       </div>
 
       {/* STUDENT VIEW (shown for non-privileged roles: student, sekertaris, bendahara, keamanan, kebersihan) */}

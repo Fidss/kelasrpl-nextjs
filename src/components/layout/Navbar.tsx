@@ -16,6 +16,7 @@ import {
   Home,
   BookOpen,
   Camera,
+  Users,
 } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
@@ -591,19 +592,19 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
                 <Camera className="w-4 h-4 text-accent-500" />
                 <span data-i18n="nav.studio">{t("nav.studio")}</span>
               </Link>
-              <Link
-                href="/menfess"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold transition-colors ${
-                  pathname.startsWith("/menfess")
-                    ? "bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 font-bold"
-                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                }`}
-              >
-                <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-                <span data-i18n="nav.menfess">{t("nav.menfess")}</span>
-              </Link>
-              <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+               <Link
+                 href="/menfess"
+                 onClick={() => setMobileMenuOpen(false)}
+                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold transition-colors ${
+                   pathname.startsWith("/menfess")
+                     ? "bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 font-bold"
+                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                 }`}
+               >
+                 <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                 <span data-i18n="nav.menfess">{t("nav.menfess")}</span>
+               </Link>
+               <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}

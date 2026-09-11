@@ -201,7 +201,7 @@ export const piketData: Record<number, string[]> = {
   ],
   4: [ // KAMIS
     "Aqila Raesha A.",
-    "Bintang Feri",
+    "Bintang Very Purwanto",
     "Muhammad Husain Haekal",
     "Rakha Saputra",
     "Ahmad Fachrial Kibar",
@@ -210,7 +210,7 @@ export const piketData: Record<number, string[]> = {
   ],
   5: [ // JUMAT
     "Al Qoirul Lathif Nazzril Putra",
-    "Ricky Dwi Putra",
+    "Ricky Dwi Aditiya",
     "Azzila Putra Afrian",
     "Muhammad Hafiz Fahrezi",
     "Muhammad Rizki Alfatah",

@@ -74,12 +74,13 @@ export async function GET(req: NextRequest) {
     const targetDate = searchParams.get("date") || nowJakarta;
 
     // 1. Fetch Students
-    const students = await sql`
-      SELECT id, name, nis, gender, role
-      FROM users
-      WHERE role != 'admin'
-      ORDER BY name ASC
-    `;
+     const students = await sql`
+       SELECT id, name, nis, gender, role
+       FROM users
+       WHERE role != 'admin'
+       ${user.role !== "admin" ? sql`AND role != 'teacher'` : sql``}
+       ORDER BY name ASC
+     `;
 
     // 2. Fetch Attendances for Target Date
     const attendances = await sql`
