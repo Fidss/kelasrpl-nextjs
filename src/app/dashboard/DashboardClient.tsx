@@ -32,6 +32,7 @@ import {
   UserCheck,
   Image as ImageIcon,
   Wallet,
+  MessageSquare,
 } from "lucide-react";
 import ClassSchedule from "@/components/landing/ClassSchedule";
 import { useLanguage } from "@/context/LanguageContext";
@@ -906,6 +907,26 @@ export default function DashboardClient({
         </Link>
 
         <Link
+          href="/chat"
+          onClick={() => setNavigatingTo("/chat")}
+          className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
+            navigatingTo === "/chat" ? "opacity-75 pointer-events-none" : "hover:border-emerald-500/50 hover:shadow-md"
+          }`}
+        >
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+            {navigatingTo === "/chat" ? <Loader2 className="w-6 h-6 animate-spin" /> : <MessageSquare className="w-6 h-6" />}
+          </div>
+          <div>
+            <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+              Pesan &amp; Grup Chat
+            </h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              Kirim DM teman atau buat grup diskusi kelas
+            </p>
+          </div>
+        </Link>
+
+        <Link
           href="/learning"
           onClick={() => setNavigatingTo("/learning")}
           className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
@@ -974,36 +995,34 @@ export default function DashboardClient({
           </div>
         </a>
 
-        {(user.role === "kebersihan" ||
-          ATTENDANCE_PRIVILEGED_ROLES.includes(user.role)) && (
-          <Link
-            href="/dashboard/piket"
-            onClick={() => setNavigatingTo("/dashboard/piket")}
-            className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
-              navigatingTo === "/dashboard/piket"
-                ? "opacity-75 pointer-events-none"
-                : "hover:border-teal-500/50 hover:shadow-md"
-            }`}
-          >
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:scale-105 transition-transform">
-              {navigatingTo === "/dashboard/piket" ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
-              ) : (
-                <Users className="w-6 h-6" />
-              )}
-            </div>
-            <div>
-              <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
-                Piket Kebersihan
-              </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                {user.role === "kebersihan"
-                  ? "Unggah foto & pantau piket kelas"
-                  : "Lihat data piket kebersihan kelas"}
-              </p>
-            </div>
-          </Link>
-        )}
+        {/* Piket Kebersihan Card */}
+        <Link
+          href="/dashboard/piket"
+          onClick={() => setNavigatingTo("/dashboard/piket")}
+          className={`group p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm transition flex items-center gap-4 ${
+            navigatingTo === "/dashboard/piket"
+              ? "opacity-75 pointer-events-none"
+              : "hover:border-teal-500/50 hover:shadow-md"
+          }`}
+        >
+          <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+            {navigatingTo === "/dashboard/piket" ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Users className="w-6 h-6" />
+            )}
+          </div>
+          <div>
+            <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-sm group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">
+              Piket Kebersihan
+            </h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {user.role === "kebersihan" || user.role === "admin"
+                ? "Unggah foto & pantau piket kelas"
+                : "Lihat jadwal & piket kebersihan kelas"}
+            </p>
+          </div>
+        </Link>
 
         {/* Kas & Keuangan Kelas Card */}
         <Link

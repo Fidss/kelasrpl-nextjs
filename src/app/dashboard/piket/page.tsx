@@ -94,43 +94,41 @@ export default async function PiketKebersihanPage() {
   );
   const notOnPiket = studentsForMatch.filter((s) => !piketStudentIds.has(s.id));
 
-  // Fetch existing piket record for today
+  // Fetch existing piket record for today (accessible by all class members)
   let piketRecord: any = null;
-  if (PIKET_VIEW_ROLES.includes(user.role)) {
-    const existing = await sql`
-      SELECT id, piket_date, photo_url, delete_url, uploader_id, uploader_name, no_piket_list, created_at, updated_at
-      FROM piket_kebersihan
-      WHERE piket_date = ${nowJakarta}
-      LIMIT 1
-    `;
-    if (existing.length > 0) {
-      const rec = existing[0];
-      let parsedNoPiket: any[] = [];
-      if (rec.no_piket_list) {
-        try {
-          parsedNoPiket = typeof rec.no_piket_list === "string" ? JSON.parse(rec.no_piket_list) : rec.no_piket_list;
-          if (!Array.isArray(parsedNoPiket)) parsedNoPiket = [];
-        } catch {
-          parsedNoPiket = [];
-        }
+  const existing = await sql`
+    SELECT id, piket_date, photo_url, delete_url, uploader_id, uploader_name, no_piket_list, created_at, updated_at
+    FROM piket_kebersihan
+    WHERE piket_date = ${nowJakarta}
+    LIMIT 1
+  `;
+  if (existing.length > 0) {
+    const rec = existing[0];
+    let parsedNoPiket: any[] = [];
+    if (rec.no_piket_list) {
+      try {
+        parsedNoPiket = typeof rec.no_piket_list === "string" ? JSON.parse(rec.no_piket_list) : rec.no_piket_list;
+        if (!Array.isArray(parsedNoPiket)) parsedNoPiket = [];
+      } catch {
+        parsedNoPiket = [];
       }
-
-      piketRecord = {
-        id: Number(rec.id),
-        piket_date: rec.piket_date
-          ? typeof rec.piket_date === "string"
-            ? rec.piket_date
-            : rec.piket_date.toISOString().split("T")[0]
-          : nowJakarta,
-        photo_url: safeNormalizeImgbbUrl(rec.photo_url || ""),
-        delete_url: rec.delete_url ? safeNormalizeImgbbUrl(rec.delete_url) : null,
-        uploader_id: rec.uploader_id ? Number(rec.uploader_id) : null,
-        uploader_name: rec.uploader_name ? String(rec.uploader_name) : user.name,
-        no_piket_list: parsedNoPiket,
-        created_at: rec.created_at ? new Date(rec.created_at).toISOString() : null,
-        updated_at: rec.updated_at ? new Date(rec.updated_at).toISOString() : null,
-      };
     }
+
+    piketRecord = {
+      id: Number(rec.id),
+      piket_date: rec.piket_date
+        ? typeof rec.piket_date === "string"
+          ? rec.piket_date
+          : rec.piket_date.toISOString().split("T")[0]
+        : nowJakarta,
+      photo_url: safeNormalizeImgbbUrl(rec.photo_url || ""),
+      delete_url: rec.delete_url ? safeNormalizeImgbbUrl(rec.delete_url) : null,
+      uploader_id: rec.uploader_id ? Number(rec.uploader_id) : null,
+      uploader_name: rec.uploader_name ? String(rec.uploader_name) : user.name,
+      no_piket_list: parsedNoPiket,
+      created_at: rec.created_at ? new Date(rec.created_at).toISOString() : null,
+      updated_at: rec.updated_at ? new Date(rec.updated_at).toISOString() : null,
+    };
   }
 
   const piketDataProp = {
@@ -145,7 +143,7 @@ export default async function PiketKebersihanPage() {
     dayName: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"][nowJakartaDay] || "Senin",
     isWeekend: nowJakartaDay === 0 || nowJakartaDay === 6,
     canUpload: user.role === "kebersihan" || user.role === "admin",
-    canViewPiketRecord: PIKET_VIEW_ROLES.includes(user.role),
+    canViewPiketRecord: true,
     piketRoster,
     piketCount: todayPiketNames.length,
     notOnPiketStudents: notOnPiket,

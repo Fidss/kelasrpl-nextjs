@@ -70,8 +70,8 @@ export default function LoginPage() {
         return;
       }
 
-      router.push(data.redirect || "/dashboard");
-      router.refresh();
+      // Fast direct navigation to dashboard with session cookie
+      window.location.href = data.redirect || "/dashboard";
     } catch {
       setError("Terjadi gangguan koneksi. Silakan coba lagi.");
       setLoading(false);

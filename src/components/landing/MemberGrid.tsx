@@ -112,8 +112,18 @@ export default function MemberGrid({ students }: MemberGridProps) {
               key={student.nis}
               className="group flex items-center gap-4 p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-accent-500/50 hover:shadow-lg transition-all duration-300"
             >
-              <div className="w-11 h-11 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 font-bold text-sm shrink-0 border border-zinc-200/60 dark:border-zinc-700/60">
-                {student.name.charAt(0)}
+              <div className="w-11 h-11 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 font-bold text-sm shrink-0 border border-zinc-200/60 dark:border-zinc-700/60 overflow-hidden relative">
+                <span className="select-none">{student.name.charAt(0)}</span>
+                {student.avatar_url && (
+                  <img
+                    src={student.avatar_url}
+                    alt={student.name}
+                    className="w-full h-full object-cover absolute inset-0 rounded-full"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = "none";
+                    }}
+                  />
+                )}
               </div>
               <div className="flex flex-col overflow-hidden">
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-accent-600 dark:group-hover:text-accent-500 transition-colors text-sm sm:text-base">

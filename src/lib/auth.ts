@@ -24,6 +24,8 @@ export interface AuthUser {
   email: string | null;
   role: UserRole | string;
   gender: "L" | "P" | null;
+  avatar_url?: string | null;
+  bio?: string | null;
 }
 
 export async function verifyPassword(plain: string, hashed: string): Promise<boolean> {

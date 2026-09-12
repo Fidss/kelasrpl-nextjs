@@ -1,7 +1,9 @@
 export interface Student {
+  id?: number;
   nis: string;
   name: string;
   gender: 'L' | 'P';
+  avatar_url?: string | null;
 }
 
 export const students: Student[] = [

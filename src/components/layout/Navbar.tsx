@@ -17,12 +17,22 @@ import {
   BookOpen,
   Camera,
   Users,
+  MessageSquare,
 } from "lucide-react";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
+import ProfileEditModal, { DEFAULT_AVATAR_URL } from "@/components/profile/ProfileEditModal";
 
 interface NavbarProps {
-  user?: { name: string; role?: string } | null;
+  user?: {
+    id?: number;
+    name: string;
+    nis?: string;
+    role?: string;
+    gender?: string | null;
+    avatar_url?: string | null;
+    bio?: string | null;
+  } | null;
 }
 
 export default function Navbar({ user: initialUser }: NavbarProps) {
@@ -30,13 +40,36 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
   const router = useRouter();
   const { t } = useLanguage();
 
-  const [currentUser, setCurrentUser] = useState<{ name: string; role?: string } | null>(
-    initialUser || null
-  );
+  const [currentUser, setCurrentUser] = useState<{
+    id?: number;
+    name: string;
+    nis?: string;
+    role?: string;
+    gender?: string | null;
+    avatar_url?: string | null;
+    bio?: string | null;
+  } | null>(initialUser || null);
   const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [realtimeClock, setRealtimeClock] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  // Sync profile update event
+  useEffect(() => {
+    const handleProfileUpdate = (e: CustomEvent) => {
+      if (e.detail) {
+        setCurrentUser((prev: any) => ({ ...prev, ...e.detail }));
+      }
+    };
+    window.addEventListener("user-profile-updated" as any, handleProfileUpdate);
+    return () => {
+      window.removeEventListener(
+        "user-profile-updated" as any,
+        handleProfileUpdate
+      );
+    };
+  }, []);
 
   // Sync theme with document class and custom event
   useEffect(() => {
@@ -134,7 +167,7 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(true)}
-                className="md:hidden p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/60 transition cursor-pointer"
+                className="xl:hidden p-2 rounded-xl text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/60 transition cursor-pointer"
                 aria-label="Buka Menu"
               >
                 <Menu className="w-5 h-5" />
@@ -151,7 +184,7 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
             </div>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center space-x-2 lg:space-x-4 text-xs font-semibold">
+            <div className="hidden xl:flex items-center space-x-1 2xl:space-x-1.5 text-xs font-semibold">
               {isLanding ? (
                 /* Landing Page: Always show standard landing page anchor links */
                 <>
@@ -270,6 +303,17 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
                     <span data-i18n="nav.studio">{t("nav.studio")}</span>
                   </Link>
                   <Link
+                    href="/chat"
+                    className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                      pathname.startsWith("/chat")
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold"
+                        : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    }`}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
+                    <span data-i18n="nav.chat">{t("nav.chat")}</span>
+                  </Link>
+                  <Link
                     href="/menfess"
                     className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                       pathname.startsWith("/menfess")
@@ -365,7 +409,7 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
                 <div className="flex items-center gap-2">
                   {realtimeClock && (
                     <div
-                      className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-xs font-medium text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60 shrink-0"
+                      className="hidden 2xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-xs font-medium text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700/60 shrink-0"
                       title="Waktu Realtime Jakarta (WIB)"
                     >
                       <span className="relative flex h-2 w-2">
@@ -377,17 +421,33 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
                       </span>
                     </div>
                   )}
-                  <div
-                    className="hidden lg:block text-xs font-semibold text-zinc-800 dark:text-zinc-200 max-w-[130px] truncate shrink-0"
-                    title={currentUser.name}
+                  {/* User Profile Avatar & Name Button (Opens Profile Modal) */}
+                  <button
+                    type="button"
+                    onClick={() => setIsProfileModalOpen(true)}
+                    className="flex items-center gap-2 p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition group cursor-pointer shrink-0"
+                    title="Ubah Foto Profil & Status"
                   >
-                    {currentUser.name}
-                  </div>
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800 ring-2 ring-accent-500/30 group-hover:ring-accent-500 transition-all flex items-center justify-center shrink-0">
+                      <img
+                        src={currentUser.avatar_url || DEFAULT_AVATAR_URL}
+                        alt={currentUser.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src =
+                            DEFAULT_AVATAR_URL;
+                        }}
+                      />
+                    </div>
+                    <span className="hidden 2xl:block text-xs font-semibold text-zinc-800 dark:text-zinc-200 max-w-[100px] truncate group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">
+                      {currentUser.name}
+                    </span>
+                  </button>
                   <button
                     type="button"
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/60 text-red-600 dark:text-red-400 text-xs font-bold border border-red-200/80 dark:border-red-900/40 transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/60 text-red-600 dark:text-red-400 text-xs font-bold border border-red-200/80 dark:border-red-900/40 transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50 shrink-0"
                     title="Keluar dari akun"
                   >
                     <LogOut className="w-3.5 h-3.5" />
@@ -399,7 +459,7 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="px-4 sm:px-5 py-2 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs sm:text-sm font-medium hover:scale-105 transition-transform shadow-xs"
+                  className="px-4 sm:px-5 py-2 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs sm:text-sm font-medium hover:scale-105 transition-transform shadow-xs shrink-0"
                   data-i18n="nav.login"
                 >
                   {t("nav.login")}
@@ -413,14 +473,14 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 xl:hidden transition-opacity"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 z-50 transform transition-transform duration-300 ease-in-out md:hidden flex flex-col shadow-2xl ${
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 z-50 transform transition-transform duration-300 ease-in-out xl:hidden flex flex-col shadow-2xl ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -592,18 +652,30 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
                 <Camera className="w-4 h-4 text-accent-500" />
                 <span data-i18n="nav.studio">{t("nav.studio")}</span>
               </Link>
-               <Link
-                 href="/menfess"
-                 onClick={() => setMobileMenuOpen(false)}
-                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold transition-colors ${
-                   pathname.startsWith("/menfess")
-                     ? "bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 font-bold"
-                     : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                 }`}
-               >
-                 <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
-                 <span data-i18n="nav.menfess">{t("nav.menfess")}</span>
-               </Link>
+              <Link
+                href="/chat"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold transition-colors ${
+                  pathname.startsWith("/chat")
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold"
+                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 text-emerald-500" />
+                <span data-i18n="nav.chat">{t("nav.chat")}</span>
+              </Link>
+              <Link
+                href="/menfess"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold transition-colors ${
+                  pathname.startsWith("/menfess")
+                    ? "bg-pink-50 dark:bg-pink-950/40 text-pink-700 dark:text-pink-300 font-bold"
+                    : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                }`}
+              >
+                <Heart className="w-4 h-4 text-pink-500 fill-pink-500" />
+                <span data-i18n="nav.menfess">{t("nav.menfess")}</span>
+              </Link>
                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
                 <Link
                   href="/"
@@ -679,12 +751,35 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
 
           {isLoggedIn ? (
             <div>
-              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-2 truncate">
-                Masuk sebagai:{" "}
-                <strong className="text-zinc-900 dark:text-zinc-100">
-                  {currentUser.name}
-                </strong>
+              <div
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
+                className="flex items-center gap-2.5 p-2 mb-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 cursor-pointer group hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                title="Klik untuk ubah foto profil"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-700 ring-2 ring-accent-500/30 flex items-center justify-center shrink-0">
+                  <img
+                    src={currentUser.avatar_url || DEFAULT_AVATAR_URL}
+                    alt={currentUser.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        DEFAULT_AVATAR_URL;
+                    }}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-accent-600">
+                    {currentUser.name}
+                  </p>
+                  <p className="text-[10px] text-accent-600 dark:text-accent-400 font-medium">
+                    Ubah Foto Profil &rarr;
+                  </p>
+                </div>
               </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/dashboard"
@@ -717,6 +812,26 @@ export default function Navbar({ user: initialUser }: NavbarProps) {
           )}
         </div>
       </aside>
+
+      {/* Global Profile Edit Modal */}
+      {currentUser && (
+        <ProfileEditModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          user={{
+            id: currentUser.id || 0,
+            name: currentUser.name,
+            nis: currentUser.nis,
+            role: currentUser.role,
+            gender: currentUser.gender,
+            avatar_url: currentUser.avatar_url,
+            bio: currentUser.bio,
+          }}
+          onProfileUpdated={(updated) => {
+            setCurrentUser((prev: any) => ({ ...prev, ...updated }));
+          }}
+        />
+      )}
     </>
   );
 }

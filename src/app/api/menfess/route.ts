@@ -16,9 +16,9 @@ export async function GET(req: NextRequest) {
 
     if (recipient && type) {
       items = await sql`
-        SELECT m.*, m.created_at::text as created_at_raw, u.name as recipient_name, u.gender as recipient_gender
+        SELECT m.*, m.created_at::text as created_at_raw, COALESCE(u.name, 'Siswa 10 RPL') as recipient_name, u.gender as recipient_gender
         FROM menfesses m
-        JOIN users u ON m.recipient_id = u.id
+        LEFT JOIN users u ON m.recipient_id = u.id
         WHERE m.recipient_id = ${parseInt(recipient)} AND m.type = ${type}
         ORDER BY m.created_at DESC
         LIMIT ${limit} OFFSET ${offset}
@@ -29,9 +29,9 @@ export async function GET(req: NextRequest) {
       `;
     } else if (recipient) {
       items = await sql`
-        SELECT m.*, m.created_at::text as created_at_raw, u.name as recipient_name, u.gender as recipient_gender
+        SELECT m.*, m.created_at::text as created_at_raw, COALESCE(u.name, 'Siswa 10 RPL') as recipient_name, u.gender as recipient_gender
         FROM menfesses m
-        JOIN users u ON m.recipient_id = u.id
+        LEFT JOIN users u ON m.recipient_id = u.id
         WHERE m.recipient_id = ${parseInt(recipient)}
         ORDER BY m.created_at DESC
         LIMIT ${limit} OFFSET ${offset}
@@ -42,9 +42,9 @@ export async function GET(req: NextRequest) {
       `;
     } else if (type) {
       items = await sql`
-        SELECT m.*, m.created_at::text as created_at_raw, u.name as recipient_name, u.gender as recipient_gender
+        SELECT m.*, m.created_at::text as created_at_raw, COALESCE(u.name, 'Siswa 10 RPL') as recipient_name, u.gender as recipient_gender
         FROM menfesses m
-        JOIN users u ON m.recipient_id = u.id
+        LEFT JOIN users u ON m.recipient_id = u.id
         WHERE m.type = ${type}
         ORDER BY m.created_at DESC
         LIMIT ${limit} OFFSET ${offset}
@@ -55,9 +55,9 @@ export async function GET(req: NextRequest) {
       `;
     } else {
       items = await sql`
-        SELECT m.*, m.created_at::text as created_at_raw, u.name as recipient_name, u.gender as recipient_gender
+        SELECT m.*, m.created_at::text as created_at_raw, COALESCE(u.name, 'Siswa 10 RPL') as recipient_name, u.gender as recipient_gender
         FROM menfesses m
-        JOIN users u ON m.recipient_id = u.id
+        LEFT JOIN users u ON m.recipient_id = u.id
         ORDER BY m.created_at DESC
         LIMIT ${limit} OFFSET ${offset}
       `;
@@ -80,8 +80,8 @@ export async function GET(req: NextRequest) {
       return {
         id: m.id,
         recipient_id: m.recipient_id,
-        recipient_name: m.recipient_name,
-        sender_name: m.sender_name,
+        recipient_name: m.recipient_name || "Siswa 10 RPL",
+        sender_name: m.sender_name || "Anonim",
         is_anonymous: Boolean(m.is_anonymous),
         message: m.message,
         type: m.type,

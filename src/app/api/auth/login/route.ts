@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
     // Query user by nis or name or email
     const users = await sql`
-      SELECT id, name, nis, email, password, role, gender
+      SELECT id, name, nis, email, password, role, gender, avatar_url, bio
       FROM users
       WHERE nis = ${trimmedIdentifier}
          OR LOWER(name) = LOWER(${trimmedIdentifier})
@@ -51,6 +51,8 @@ export async function POST(req: NextRequest) {
       email: user.email,
       role: user.role || "student",
       gender: user.gender,
+      avatar_url: user.avatar_url || null,
+      bio: user.bio || null,
     };
 
     const token = await createSessionToken(authUser);
